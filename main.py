@@ -78,7 +78,7 @@ for dataset_id, schema in data:
     res.append(build_details(details, report))
 
 with open("data.csv", "a") as f:
-    writer = csv.DictWriter(f, res[0].keys())
+    writer = csv.DictWriter(f, res[0].keys(), lineterminator="\n")
     if f.tell() == 0:
         writer.writeheader()
     writer.writerows(res)
