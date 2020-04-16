@@ -7,9 +7,10 @@ from collections import defaultdict
 import csv
 import datetime
 import sys
+import json
 
 
-def get_details(dataset_id):
+def get_details(dataset_id, schema):
     response = requests.get(f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/")
     response.raise_for_status()
 
@@ -55,7 +56,7 @@ def build_details(details, report):
         "nb_rows": report["tables"][0]["row-count"],
         "nb_errors": errors["count"],
         "nb_rows_with_errors": errors["value-errors"]["rows-count"],
-        "errors_report": errors,
+        "errors_report": json.dumps(errors),
     }
 
 
