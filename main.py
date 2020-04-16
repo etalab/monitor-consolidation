@@ -14,10 +14,13 @@ def get_details(dataset_id, schema):
     response = requests.get(f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/")
     response.raise_for_status()
 
+    url = response.json()["resources"][0]["url"]
+
     return {
         "dataset_id": dataset_id,
         "name": response.json()["title"],
-        "url": response.json()["resources"][0]["url"],
+        "url": url,
+        "report_url": f"https://go.validata.fr/table-schema?input=url&schema_url={schema}&url={url}&repair=true",
     }
 
 
@@ -53,6 +56,7 @@ def build_details(details, report):
         "dataset_id": details["dataset_id"],
         "name": details["name"],
         "file_url": details["url"],
+        "report_url": details["report_url"],
         "nb_rows": report["tables"][0]["row-count"],
         "nb_errors": errors["count"],
         "nb_rows_with_errors": errors["value-errors"]["rows-count"],
@@ -73,7 +77,7 @@ data = [
 
 res = []
 for dataset_id, schema in data:
-    details = get_details(dataset_id)
+    details = get_details(dataset_id, schema)
     report = build_report(details["url"], schema)
     res.append(build_details(details, report))
 
