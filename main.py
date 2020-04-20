@@ -25,6 +25,10 @@ def get_schema_url(slug):
     return schemas[0]["latest_url"]
 
 
+def get_schema_version(slug):
+    return schemas_details()[slug]["latest_version"]
+
+
 def get_details(dataset_id, slug):
     response = requests.get(f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/")
     response.raise_for_status()
@@ -34,6 +38,7 @@ def get_details(dataset_id, slug):
 
     return {
         "schema_url": schema_url,
+        "schema_version": get_schema_version(slug),
         "dataset_id": dataset_id,
         "name": response.json()["title"],
         "dataset_url": dataset_url,
@@ -72,6 +77,7 @@ def build_details(details, report):
         "date": datetime.date.today(),
         "dataset_id": details["dataset_id"],
         "name": details["name"],
+        "schema_version": details["schema_version"],
         "file_url": details["dataset_url"],
         "report_url": details["report_url"],
         "nb_rows": report["tables"][0]["row-count"],
