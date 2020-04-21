@@ -2,7 +2,9 @@ import patch
 
 import validata_core
 import requests
+import yaml
 
+import functools
 from collections import defaultdict
 import csv
 import datetime
@@ -10,17 +12,37 @@ import sys
 import json
 
 
-def get_details(dataset_id, schema):
+@functools.lru_cache()
+def schemas_details():
+    with requests.get("https://schema.data.gouv.fr/schemas/schemas.yml") as response:
+        response.raise_for_status()
+        return yaml.safe_load(response.content)
+
+
+def get_schema_url(slug):
+    schemas = schemas_details()[slug]["schemas"]
+    assert len(schemas) == 1
+    return schemas[0]["latest_url"]
+
+
+def get_schema_version(slug):
+    return schemas_details()[slug]["latest_version"]
+
+
+def get_details(dataset_id, slug):
     response = requests.get(f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/")
     response.raise_for_status()
 
-    url = response.json()["resources"][0]["url"]
+    dataset_url = response.json()["resources"][0]["url"]
+    schema_url = get_schema_url(slug)
 
     return {
+        "schema_url": schema_url,
+        "schema_version": get_schema_version(slug),
         "dataset_id": dataset_id,
         "name": response.json()["title"],
-        "url": url,
-        "report_url": f"https://go.validata.fr/table-schema?input=url&schema_url={schema}&url={url}&repair=true",
+        "dataset_url": dataset_url,
+        "report_url": f"https://go.validata.fr/table-schema?input=url&schema_url={schema_url}&url={dataset_url}&repair=true",
     }
 
 
@@ -55,7 +77,8 @@ def build_details(details, report):
         "date": datetime.date.today(),
         "dataset_id": details["dataset_id"],
         "name": details["name"],
-        "file_url": details["url"],
+        "schema_version": details["schema_version"],
+        "file_url": details["dataset_url"],
         "report_url": details["report_url"],
         "nb_rows": report["tables"][0]["row-count"],
         "nb_errors": errors["count"],
@@ -65,20 +88,13 @@ def build_details(details, report):
 
 
 data = [
-    (
-        "5d6eaffc8b4c417cdc452ac3",
-        "https://schema.data.gouv.fr/schemas/etalab/schema-lieux-covoiturage/latest/schema.json",
-    ),
-    (
-        "5448d3e0c751df01f85d0572",
-        "https://schema.data.gouv.fr/schemas/etalab/schema-irve/latest/schema.json",
-    ),
+    ("5d6eaffc8b4c417cdc452ac3", "etalab/schema-lieux-covoiturage"),
+    ("5448d3e0c751df01f85d0572", "etalab/schema-irve"),
 ]
 
 res = []
-for dataset_id, schema in data:
-    details = get_details(dataset_id, schema)
-    report = build_report(details["url"], schema)
+for details in [get_details(dataset_id, slug) for dataset_id, slug in data]:
+    report = build_report(details["dataset_url"], details["schema_url"])
     res.append(build_details(details, report))
 
 with open("data.csv", "a") as f:
