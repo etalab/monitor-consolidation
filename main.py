@@ -87,15 +87,13 @@ def build_details(details, report):
     }
 
 
-data = [
-    ("5d6eaffc8b4c417cdc452ac3", "etalab/schema-lieux-covoiturage"),
-    ("5448d3e0c751df01f85d0572", "etalab/schema-irve"),
-]
-
 res = []
-for details in [get_details(dataset_id, slug) for dataset_id, slug in data]:
-    report = build_report(details["dataset_url"], details["schema_url"])
-    res.append(build_details(details, report))
+for slug, data in schemas_details().items():
+    if data["consolidation"] and data["consolidation"]["dataset_id"]:
+        dataset_id = data["consolidation"]["dataset_id"]
+        details = get_details(dataset_id, slug)
+        report = build_report(details["dataset_url"], details["schema_url"])
+        res.append(build_details(details, report))
 
 with open("data.csv", "a") as f:
     writer = csv.DictWriter(f, res[0].keys(), lineterminator="\n")
