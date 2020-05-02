@@ -135,11 +135,11 @@ for slug, data in schemas_details().items():
         json_report[dataset_id] = build_report(details)
 
 # Write today's data to a JSON file
-with open("report.json", "w") as f:
+with open("data/report.json", "w") as f:
     json.dump(json_report, f, indent=2, ensure_ascii=False)
 
 # Append daily data to a CSV file
-with open("data.csv", "a") as f:
+with open("data/data.csv", "a") as f:
     writer = csv.DictWriter(f, daily_data[0].keys(), lineterminator="\n")
     if f.tell() == 0:
         writer.writeheader()
