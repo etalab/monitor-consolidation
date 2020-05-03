@@ -107,7 +107,7 @@ def build_details(details, report):
     errors = report["tables"][0]["error-stats"]
 
     return {
-        "date": str(datetime.date.today()),
+        "date": datetime.date.today().isoformat(),
         "dataset_id": details["dataset_id"],
         "name": details["name"],
         "schema_slug": details["schema_slug"],
