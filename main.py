@@ -5,6 +5,7 @@ import requests
 import yaml
 
 import functools
+from urllib.parse import urlencode
 from collections import defaultdict
 import csv
 import datetime
@@ -38,6 +39,7 @@ def get_details(dataset_id, slug):
 
     return {
         "schema_url": schema_url,
+        "schema_slug": slug,
         "schema_version": get_schema_version(slug),
         "dataset_id": dataset_id,
         "name": response.json()["title"],
@@ -63,20 +65,52 @@ def enrich_report(report, columns):
     return report
 
 
-def build_report(source, schema):
+def validate(source, schema):
     report = validata_core.validate(source, schema)
     columns = report["tables"][0]["headers"]
 
     return enrich_report(report, columns)
 
 
+def build_report(report):
+    def badge_url(nb_errors, color):
+        query = urlencode(
+            {
+                "label": "Consolidation",
+                "message": f"{nb_errors} erreurs",
+                "color": color,
+                "style": "flat-square",
+            }
+        )
+        # See documentation on https://shields.io
+        return f"https://img.shields.io/static/v1?{query}"
+
+    percentage = int(report["nb_errors"] * 100 / report["nb_rows"])
+    if percentage == 0:
+        status, color = "ok", "green"
+    elif percentage <= 10:
+        status, color = "warning", "orange"
+    else:
+        status, color = "invalid", "red"
+
+    return {
+        **report,
+        **{
+            "status": status,
+            "error_percentage": percentage,
+            "badge_url": badge_url(report["nb_errors"], color),
+        },
+    }
+
+
 def build_details(details, report):
     errors = report["tables"][0]["error-stats"]
 
     return {
-        "date": datetime.date.today(),
+        "date": datetime.date.today().isoformat(),
         "dataset_id": details["dataset_id"],
         "name": details["name"],
+        "schema_slug": details["schema_slug"],
         "schema_version": details["schema_version"],
         "file_url": details["dataset_url"],
         "report_url": details["report_url"],
@@ -87,16 +121,26 @@ def build_details(details, report):
     }
 
 
-res = []
+daily_data = []
+json_report = {}
 for slug, data in schemas_details().items():
     if data["consolidation"] and data["consolidation"]["dataset_id"]:
         dataset_id = data["consolidation"]["dataset_id"]
         details = get_details(dataset_id, slug)
-        report = build_report(details["dataset_url"], details["schema_url"])
-        res.append(build_details(details, report))
 
-with open("data.csv", "a") as f:
-    writer = csv.DictWriter(f, res[0].keys(), lineterminator="\n")
+        report = validate(details["dataset_url"], details["schema_url"])
+        details = build_details(details, report)
+        daily_data.append(details)
+
+        json_report[dataset_id] = build_report(details)
+
+# Write today's data to a JSON file
+with open("data/report.json", "w") as f:
+    json.dump(json_report, f, indent=2, ensure_ascii=False)
+
+# Append daily data to a CSV file
+with open("data/data.csv", "a") as f:
+    writer = csv.DictWriter(f, daily_data[0].keys(), lineterminator="\n")
     if f.tell() == 0:
         writer.writeheader()
-    writer.writerows(res)
+    writer.writerows(daily_data)
