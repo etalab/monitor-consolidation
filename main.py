@@ -1,5 +1,3 @@
-import patch
-
 import validata_core
 import requests
 import yaml
@@ -48,28 +46,8 @@ def get_details(dataset_id, slug):
     }
 
 
-def enrich_report(report, columns):
-    count_col_code = {}
-    for error in report["tables"][0]["errors"]:
-        if error["tag"] != "value":
-            continue
-        col = columns[(error["column-number"] - 1)]
-        if col not in count_col_code:
-            count_col_code[col] = defaultdict(int)
-        count_col_code[col][error["code"]] += 1
-
-    report["tables"][0]["error-stats"]["value-errors"][
-        "count-by-col-and-code"
-    ] = count_col_code
-
-    return report
-
-
 def validate(source, schema):
-    report = validata_core.validate(source, schema)
-    columns = report["tables"][0]["headers"]
-
-    return enrich_report(report, columns)
+    return validata_core.validate(source, schema, error_limit=-1)
 
 
 def build_report(report):
