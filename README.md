@@ -6,4 +6,5 @@ Calcule tous les jours des statistiques sur les jeux de données consolidés, à
 ## Jeux de données concernés
 
 - [Infrastructure de recharge des véhicules électriques](https://www.data.gouv.fr/fr/datasets/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques/)
-- [Base nationale consolidée des lieux de covoiturage](https://www.data.gouv.fr/fr/datasets/base-nationale-consolidee-des-lieux-de-covoiturage/)
+- [Base nationale des lieux de covoiturage](https://www.data.gouv.fr/fr/datasets/base-nationale-consolidee-des-lieux-de-covoiturage/)
+- [Base nationale des lieux de stationnement](https://www.data.gouv.fr/fr/datasets/base-nationale-des-lieux-de-stationnement/)
