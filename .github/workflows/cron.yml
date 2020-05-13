@@ -25,6 +25,8 @@ jobs:
       run: pip install -r requirements.txt
     - name: Run main
       run: python main.py
+      env:
+        DATAGOUV_API_KEY: ${{ secrets.DATAGOUV_API_KEY }}
     - name: Commit files
       run: |
         git config --local user.email "actions@github.com"
