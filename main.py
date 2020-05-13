@@ -159,7 +159,7 @@ def post_comment(details):
     """
 
     requests.post(
-        f"{os.environ["DATAGOUV_API_DOMAIN"]}/api/1/discussions/",
+        "https://www.data.gouv.fr/api/1/discussions/",
         headers={
             "X-API-KEY": os.environ["DATAGOUV_API_KEY"],
             "User-Agent": "https://github.com/etalab/monitor-consolidation",
