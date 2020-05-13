@@ -26,7 +26,6 @@ jobs:
     - name: Run main
       run: python main.py
       env:
-        DATAGOUV_API_DOMAIN: ${{ secrets.DATAGOUV_API_DOMAIN }}
         DATAGOUV_API_KEY: ${{ secrets.DATAGOUV_API_KEY }}
     - name: Commit files
       run: |
