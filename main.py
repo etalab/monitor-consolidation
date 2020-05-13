@@ -147,9 +147,15 @@ def post_comment(details):
     comment = f"""\
     Bonjour,
 
+    Vous recevez ce message car ce jeu de données est une consolidation qui se veut conforme au schéma [{details['schema_slug']}]({schema_doc_url}), ce qui a déclenché un contrôle automatique de vos données par notre robot de validation.
+
     [Le fichier]({details["file_url"]}) que vous venez de publier ou mettre à jour comporte {plural(details["nb_errors"], "erreur")} sur un total de {plural(details["nb_rows"], "ligne")} par rapport au [schéma de référence]({schema_doc_url}).
 
     Vous pouvez consulter le [dernier rapport de validation]({details["report_url"]}) pour vous aider à corriger les erreurs.
+
+    Une fois un fichier valide publié, vous pouvez clore cette discussion.
+
+    Une question ? Écrivez à validation@data.gouv.fr en incluant l'URL du jeu de données concerné.
     """
 
     requests.post(
