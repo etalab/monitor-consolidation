@@ -175,6 +175,10 @@ def post_comment(details):
 daily_data = []
 json_report = {}
 for slug, data in schemas_details().items():
+    # Only Table Schema schemas are supported right now
+    # when finding out the quality of a consolidation
+    if data["type"] != "tableschema":
+        continue
     if data["consolidation"] and data["consolidation"]["dataset_id"]:
         dataset_id = data["consolidation"]["dataset_id"]
         details = get_details(dataset_id, slug)
