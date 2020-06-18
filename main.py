@@ -59,7 +59,7 @@ def get_details(dataset_id, slug):
         "dataset_id": dataset_id,
         "name": response.json()["title"],
         "dataset_url": dataset_url,
-        "report_url": f"https://go.validata.fr/table-schema?input=url&schema_url={schema_url}&url={dataset_url}&repair=true",
+        "report_url": f"https://validata.etalab.studio/table-schema?input=url&schema_url={schema_url}&url={dataset_url}&repair=true",
     }
 
 
