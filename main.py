@@ -183,14 +183,15 @@ def post_comment(details):
     """
 
     existing_discussion_id = find_existing_discussion(details["dataset_id"])
+    headers = {
+        "X-API-KEY": os.environ["DATAGOUV_API_KEY"],
+        "User-Agent": "https://github.com/etalab/monitor-consolidation",
+    }
     if not existing_discussion_id:
         # Creating a new discussion
         requests.post(
             f"{DATAGOUV_API}/discussions/",
-            headers={
-                "X-API-KEY": os.environ["DATAGOUV_API_KEY"],
-                "User-Agent": "https://github.com/etalab/monitor-consolidation",
-            },
+            headers=headers,
             json={
                 "title": COMMENT_SUBJECT,
                 "comment": textwrap.dedent(comment),
@@ -201,10 +202,7 @@ def post_comment(details):
         # Adding a comment to an existing discussion
         requests.post(
             f"{DATAGOUV_API}/discussions/{existing_discussion_id}/",
-            headers={
-                "X-API-KEY": os.environ["DATAGOUV_API_KEY"],
-                "User-Agent": "https://github.com/etalab/monitor-consolidation",
-            },
+            headers=headers,
             json={"comment": textwrap.dedent(comment)},
         ).raise_for_status()
 
