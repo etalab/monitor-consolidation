@@ -15,6 +15,9 @@ import os
 import textwrap
 
 CSV_PATH = "data/data.csv"
+COMMENT_SUBJECT = "Conformité au schéma"
+USER_SLUG = "validation-data-gouv-fr"
+DATAGOUV_API = "https://www.data.gouv.fr/api/1"
 
 
 @functools.lru_cache()
@@ -46,7 +49,7 @@ def get_schema_version(slug):
 
 
 def get_details(dataset_id, slug):
-    response = requests.get(f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/")
+    response = requests.get(f"{DATAGOUV_API}/datasets/{dataset_id}/")
     response.raise_for_status()
 
     dataset_url = response.json()["resources"][0]["url"]
@@ -137,6 +140,27 @@ def build_details(details, report):
 
 
 def post_comment(details):
+    def find_existing_discussion(dataset_id):
+        url = f"{DATAGOUV_API}/discussions/?for={dataset_id}&closed=false&sort=-created"
+        while True:
+            r = requests.get(url)
+            r.raise_for_status()
+
+            data = r.json()
+
+            for discussion in data["data"]:
+                if (
+                    discussion["title"] == COMMENT_SUBJECT
+                    and discussion["user"]["slug"] == USER_SLUG
+                ):
+                    return discussion["id"]
+
+            if data["next_page"] is None:
+                break
+            url = data["next_page"]
+
+        return None
+
     def plural(count, word):
         if count != 1:
             return f"{count} {word}s"
@@ -158,18 +182,29 @@ def post_comment(details):
     Une question ? Écrivez à validation@data.gouv.fr en incluant l'URL du jeu de données concerné.
     """
 
-    requests.post(
-        "https://www.data.gouv.fr/api/1/discussions/",
-        headers={
-            "X-API-KEY": os.environ["DATAGOUV_API_KEY"],
-            "User-Agent": "https://github.com/etalab/monitor-consolidation",
-        },
-        json={
-            "title": "Conformité au schéma",
-            "comment": textwrap.dedent(comment),
-            "subject": {"id": details["dataset_id"], "class": "Dataset"},
-        },
-    ).raise_for_status()
+    existing_discussion_id = find_existing_discussion(details["dataset_id"])
+    headers = {
+        "X-API-KEY": os.environ["DATAGOUV_API_KEY"],
+        "User-Agent": "https://github.com/etalab/monitor-consolidation",
+    }
+    if not existing_discussion_id:
+        # Creating a new discussion
+        requests.post(
+            f"{DATAGOUV_API}/discussions/",
+            headers=headers,
+            json={
+                "title": COMMENT_SUBJECT,
+                "comment": textwrap.dedent(comment),
+                "subject": {"id": details["dataset_id"], "class": "Dataset"},
+            },
+        ).raise_for_status()
+    else:
+        # Adding a comment to an existing discussion
+        requests.post(
+            f"{DATAGOUV_API}/discussions/{existing_discussion_id}/",
+            headers=headers,
+            json={"comment": textwrap.dedent(comment)},
+        ).raise_for_status()
 
 
 daily_data = []
