@@ -1,6 +1,6 @@
 {
   "5448d3e0c751df01f85d0572": {
-    "date": "2022-02-10",
+    "date": "2022-02-11",
     "dataset_id": "5448d3e0c751df01f85d0572",
     "name": "Fichier consolidé des Bornes de Recharge pour Véhicules Électriques",
     "schema_slug": "etalab/schema-irve",
@@ -16,7 +16,7 @@
     "badge_url": "https://img.shields.io/static/v1?label=Consolidation&message=4+erreurs&color=green&style=flat-square"
   },
   "5d6eaffc8b4c417cdc452ac3": {
-    "date": "2022-02-10",
+    "date": "2022-02-11",
     "dataset_id": "5d6eaffc8b4c417cdc452ac3",
     "name": "Base Nationale des Lieux de Covoiturage",
     "schema_slug": "etalab/schema-lieux-covoiturage",
@@ -32,19 +32,19 @@
     "badge_url": "https://img.shields.io/static/v1?label=Consolidation&message=0+erreurs&color=green&style=flat-square"
   },
   "5ea1add4a5a7dac3af82310a": {
-    "date": "2022-02-10",
+    "date": "2022-02-11",
     "dataset_id": "5ea1add4a5a7dac3af82310a",
     "name": "Base Nationale des Lieux de Stationnement",
     "schema_slug": "etalab/schema-stationnement",
     "schema_version": "0.1.4",
-    "file_url": "https://static.data.gouv.fr/resources/base-nationale-des-lieux-de-stationnement/20211012-095231/bnls-20211012.csv",
-    "report_url": "https://validata.etalab.studio/table-schema?input=url&schema_url=https://schema.data.gouv.fr/schemas/etalab/schema-stationnement/0.1.4/schema.json&url=https://static.data.gouv.fr/resources/base-nationale-des-lieux-de-stationnement/20211012-095231/bnls-20211012.csv&repair=true",
-    "nb_rows": 802,
-    "nb_errors": 1,
-    "nb_rows_with_errors": 0,
-    "errors_report": "{\"structure-errors\": {\"count\": 1, \"count-by-code\": {\"extra-header\": 1}}, \"value-errors\": {\"count\": 0, \"rows-count\": 0, \"count-by-code\": {}, \"count-by-col-and-code\": {}}, \"count\": 1}",
+    "file_url": "https://static.data.gouv.fr/resources/base-nationale-des-lieux-de-stationnement/20220210-164418/bnls.csv",
+    "report_url": "https://validata.etalab.studio/table-schema?input=url&schema_url=https://schema.data.gouv.fr/schemas/etalab/schema-stationnement/0.1.4/schema.json&url=https://static.data.gouv.fr/resources/base-nationale-des-lieux-de-stationnement/20220210-164418/bnls.csv&repair=true",
+    "nb_rows": 800,
+    "nb_errors": 7,
+    "nb_rows_with_errors": 6,
+    "errors_report": "{\"structure-errors\": {\"count\": 1, \"count-by-code\": {\"extra-header\": 1}}, \"value-errors\": {\"count\": 6, \"rows-count\": 6, \"count-by-code\": {\"type-or-format-error\": 6}, \"count-by-col-and-code\": {\"nb_covoit\": {\"type-or-format-error\": 6}}}, \"count\": 7}",
     "status": "ok",
     "error_percentage": 0,
-    "badge_url": "https://img.shields.io/static/v1?label=Consolidation&message=1+erreurs&color=green&style=flat-square"
+    "badge_url": "https://img.shields.io/static/v1?label=Consolidation&message=7+erreurs&color=green&style=flat-square"
   }
 }
