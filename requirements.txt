@@ -21,7 +21,7 @@ jsonlines==1.2.0
 jsonpointer==2.0
 jsonschema==3.2.0
 linear-tsv==1.1.0
-lxml==4.5.0
+lxml==4.9.1
 numpy==1.18.2
 openpyxl==3.0.3
 pandas==1.0.3
